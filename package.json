@@ -1,0 +1,16 @@
+{
+  "name": "export",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "watch": "./scripts/build.js --watch",
+    "build": "NODE_ENV=production ./scripts/build.js"
+  },
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "esbuild": "^0.14.11",
+    "esbuild-vue": "^1.1.1"
+  }
+}
