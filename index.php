@@ -24,9 +24,18 @@ Kirby::plugin('rasteiner/export', [
                 'action' => function() {
                     set_time_limit(0);
 
+                    // set a proprietary header to prevent gzipping and output buffering
+                    header('Content-Type: text/cmdstream');
+                    
+                    //don't cache the response
+                    header('Cache-Control: no-cache, no-store, must-revalidate');
+                    header('Pragma: no-cache');
+                    header('Expires: 0');
+
                     Exporter::create(get() + [
                         'channel' => function($cmd, $value) {
                             echo $cmd . ': ' . $value . "\n";
+                            ob_end_flush();
                             flush();
                         }
                     ]);
