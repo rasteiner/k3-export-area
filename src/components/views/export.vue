@@ -177,12 +177,11 @@ export default {
         },
 
         createExport() {
-            this.$dialog('export/create', ({data, dialog}) => {
-                if(data.basePath) {
-                    this.startExport(data);
-                    dialog.close();
+            this.$dialog('export/create', ({value}) => {
+                if(value.basePath) {
+                    this.startExport(value);
                 } else {
-                    dialog.error('Please select a base path');
+                    throw 'Please select a base path'
                 }
             });
         },
