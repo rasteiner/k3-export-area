@@ -2,7 +2,6 @@
 
 use Kirby\Cms\App as Kirby;
 use Kirby\Cms\App;
-use Kirby\Filesystem\F;
 use rasteiner\export\Exporter;
 
 load([
@@ -35,7 +34,9 @@ Kirby::plugin('rasteiner/export', [
                     Exporter::create(get() + [
                         'channel' => function($cmd, $value) {
                             echo $cmd . ': ' . $value . "\n";
-                            ob_end_flush();
+                            if(ob_get_length()) {
+                                ob_end_flush();
+                            }
                             flush();
                         }
                     ]);

@@ -58,8 +58,6 @@ class Exporter {
     }
 
     public static function create($options = []) {
-        set_time_limit(0);
-
         $fileVersionComponentFactory = require_once __DIR__ . '/components/file.version.php';
         $fileUrlComponentFactory = require_once __DIR__ . '/components/file.url.php';
         $jsComponentFactory = require_once __DIR__ . '/components/js.php';
@@ -101,11 +99,13 @@ class Exporter {
         $site = $newKirby->site();
         $pagesRender = option('rasteiner.export.pages', fn () => $site->index());
         $assetsCopy = option('rasteiner.export.assets', fn () => []);
+        $stringsCopy = option('rasteiner.export.strings', fn () => []);
 
         $pages = $pagesRender($newKirby);
         $files = $assetsCopy($newKirby);
+        $strings = $stringsCopy($newKirby);
 
-        $fileCount = $pages->count() + count($files);
+        $fileCount = $pages->count() + count($files) + count($strings);
         $send('count', $fileCount*2);
 
         $count = 0;
@@ -125,6 +125,12 @@ class Exporter {
 
         foreach ($files as $path => $file) {
             $storage->addFile($path, $file);
+            $count++;
+            $send('progress', $count);
+        }
+
+        foreach ($strings as $dest => $string) {
+            $storage->addString($dest, $string);
             $count++;
             $send('progress', $count);
         }
