@@ -4,6 +4,7 @@ namespace rasteiner\export;
 
 use Kirby\Cms\App;
 use Kirby\Filesystem\F;
+use Kirby\Http\Url;
 
 return function (StorageInterface $storage) {
     $exported = [];
@@ -12,11 +13,19 @@ return function (StorageInterface $storage) {
         $original = $kirby->nativeComponent('js');
         if(!isset($exported[$url])) {
             $url = $original($kirby, $url, $options);
-            $hash = substr(md5_file($kirby->root() . "/$url"), 0, 8);
-            $path = dirname($url) . '/' . F::name($url) . ".$hash.js";
+
+            $siteUrl = site()->url();
+            $abs = Url::makeAbsolute($url, $siteUrl);
+            $relative = substr($abs, strlen($siteUrl));
+            $file = $kirby->roots()->index() . $relative;
+
+            $hash = substr(md5_file($file), 0, 8);
+            $hashedFilename = F::name($file) . ".$hash.js";
+            $path = ltrim(dirname($relative), '/') . '/' . $hashedFilename;
+            $abs = dirname($abs) . '/' . $hashedFilename;
             
-            $exported[$url] = $path;
-            $storage->addFile($path, $kirby->root() . "/$url");
+            $exported[$url] = $abs;
+            $storage->addFile($path, $file);
         }
         return $exported[$url];
     };
